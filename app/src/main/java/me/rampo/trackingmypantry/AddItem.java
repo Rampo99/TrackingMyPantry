@@ -64,24 +64,36 @@ public class AddItem extends Fragment {
             public void onClick(View v) {
                 EditText name = view.findViewById(R.id.add_item_name);
                 EditText desc = view.findViewById(R.id.add_item_desc);
+                String namestring = name.getText().toString();
+                String descstring = desc.getText().toString();
+                String barcodestring = add_barcode.getText().toString();
                 JSONObject body = new JSONObject();
 
                 try {
                     body.put("token", token);
-                    body.put("name", name.getText().toString());
-                    body.put("description", desc.getText().toString());
-                    body.put("barcode", add_barcode.getText().toString());
+                    body.put("name", namestring);
+                    body.put("description", descstring);
+                    body.put("barcode", barcodestring);
                     body.put("test",false);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
                 String requestBody = body.toString();
-                insertedproducts.add(requestBody);
                 RequestQueue queue = Volley.newRequestQueue(context);
                 JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, "https://lam21.modron.network/products", null,
                         new Response.Listener<JSONObject>() {
                             @Override
                             public void onResponse(JSONObject response) {
+                                JSONObject newbody = new JSONObject();
+                                try {
+                                    newbody.put("id",response.getString("id"));
+                                    newbody.put("name",namestring);
+                                    newbody.put("description",descstring);
+                                    newbody.put("barcode",barcodestring);
+                                    insertedproducts.add(newbody.toString());
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
                                 AlertDialog.Builder builder = new AlertDialog.Builder(context);
                                 builder.setMessage("Elemento aggiunto! Vuoi aggiungerne altri?").setCancelable(true);
                                 builder.setPositiveButton("SI", new DialogInterface.OnClickListener() {

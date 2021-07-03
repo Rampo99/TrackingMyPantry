@@ -8,7 +8,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
@@ -32,6 +34,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,8 +42,8 @@ import java.util.Map;
 public class Home extends Fragment {
     Context context;
     String accessToken;
-
-    String insertedproducts;
+    ListView productsview;
+    ArrayList<String> insertedproducts;
     Bundle b;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
@@ -54,10 +57,13 @@ public class Home extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         b = getArguments();
         accessToken = b.getString("accessToken");
-        insertedproducts = b.getString("products");
+        insertedproducts = b.getStringArrayList("products");
+        productsview = view.findViewById(R.id.home_products);
         if(insertedproducts != null){
             //print my products
-            //tbd
+            List<Product> productList = new Gson().fromJson(insertedproducts.toString(),new TypeToken<List<Product>>(){}.getType());
+            ArrayAdapter<Product> productArrayAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1,productList);
+            productsview.setAdapter(productArrayAdapter);
         }
 
         OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
@@ -109,7 +115,6 @@ public class Home extends Fragment {
                             String token = response.getString("token");
                             List<Product> productList = new Gson().fromJson(products,new TypeToken<List<Product>>(){}.getType());
                             if(productList.size() == 0) {
-                                Log.d("test","non trovati");
                                 AlertDialog.Builder builder = new AlertDialog.Builder(context);
                                 builder.setMessage("Non é stato trovato nessun elemento con questo barcode, vuoi aggiungerlo?").setCancelable(true);
                                 builder.setPositiveButton("SI", new DialogInterface.OnClickListener() {
@@ -129,9 +134,9 @@ public class Home extends Fragment {
                                 AlertDialog alert = builder.create();
                                 alert.show();
                             } else {
-                                Log.d("test","trovati");
                                 //print products here
-                                //tbd
+                                ArrayAdapter<Product> productArrayAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1,productList);
+                                productsview.setAdapter(productArrayAdapter);
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();

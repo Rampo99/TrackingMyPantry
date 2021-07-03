@@ -6,6 +6,14 @@ public class Product {
     String description;
     String barcode;
 
+    @Override
+    public String toString() {
+        return "Nome: "+ name + '\n' +
+                "Id: " + id + '\n' +
+                "Descrizione: " + description + '\n' +
+                "Barcode: " + barcode + '\n';
+    }
+
     public Product(String id, String name, String description, String barcode) {
         this.id = id;
         this.name = name;
