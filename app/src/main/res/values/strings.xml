@@ -1,0 +1,30 @@
+<resources>
+    <!-- General use strings -->
+
+
+    <string name="mail">Mail</string>
+    <string name="psw">Password</string>
+    <string name="confirm">Conferma!</string>
+    <string name="back">Annulla!</string>
+
+    <string name="add_item">Aggiungi</string>
+
+    <!-- Register fragment -->
+    <string name="name">Nome</string>
+    <string name="register">Registrati</string>
+
+
+    <!-- Top  -->
+    <string name="app_name">TrackingMyPantry</string>
+    <!-- Add item -->
+    <string name="add_item_token">Token</string>
+    <string name="add_item_desc">Descrizione</string>
+    <!-- Home fragment -->
+    <string name="barcode">Inserisci barcode</string>
+    <string name="home_search">Cerca</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="login_label">Login Fragment</string>
+    <string name="register_label">Register Fragment</string>
+    <string name="main_label">Main Fragment</string>
+    <string name="add_label">Add fragment</string>
+</resources>

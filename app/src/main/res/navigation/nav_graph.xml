@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/LoginFragment">
+
+    <fragment
+        android:id="@+id/LoginFragment"
+        android:name="me.rampo.trackingmypantry.Login"
+        android:label="@string/login_label"
+        tools:layout="@layout/login">
+
+        <action
+            android:id="@+id/action_Login_Register"
+            app:destination="@id/RegisterFragment" />
+        <action
+            android:id="@+id/action_Login_Home"
+            app:destination="@id/HomeFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/RegisterFragment"
+        android:name="me.rampo.trackingmypantry.Register"
+        android:label="@string/register_label"
+        tools:layout="@layout/register">
+
+        <action
+            android:id="@+id/action_Register_Login"
+            app:destination="@id/LoginFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/HomeFragment"
+        android:name="me.rampo.trackingmypantry.Home"
+        android:label="@string/main_label"
+        tools:layout="@layout/home">
+
+        <action
+            android:id="@+id/action_Home_Login"
+            app:destination="@id/LoginFragment" />
+        <action
+            android:id="@+id/action_Home_Add"
+            app:destination="@id/add_item" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/add_item"
+        android:name="me.rampo.trackingmypantry.AddItem"
+        android:label="@string/add_label"
+        tools:layout="@layout/add_item">
+
+        <action
+            android:id="@+id/action_Add_Home"
+            app:destination="@id/HomeFragment" />
+    </fragment>
+
+
+</navigation>
