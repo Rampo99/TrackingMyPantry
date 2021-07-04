@@ -3,6 +3,7 @@ package me.rampo.trackingmypantry;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -43,7 +44,7 @@ import java.util.Map;
 
 public class Home extends Fragment {
     Context context;
-    String accessToken;
+    String accessToken = null;
     ListView productsview;
     ArrayList<String> insertedproducts;
     List<Product> productList;
@@ -62,10 +63,16 @@ public class Home extends Fragment {
         context = this.getContext();
         queue = Volley.newRequestQueue(context);
         super.onViewCreated(view, savedInstanceState);
+        SharedPreferences preferences = getActivity().getPreferences(Context.MODE_PRIVATE);
         b = getArguments();
+
         db = new DBHelper(context);
-        accessToken = b.getString("accessToken");
-        insertedproducts = b.getStringArrayList("products");
+        try {
+            accessToken = b.getString("accessToken");
+            insertedproducts = b.getStringArrayList("products");
+        }catch (Exception ignored){}
+
+
         productsview = view.findViewById(R.id.home_products);
         if(insertedproducts != null){
             //print my products
@@ -78,12 +85,14 @@ public class Home extends Fragment {
         OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
             @Override
             public void handleOnBackPressed() {
+                OnBackPressedCallback cb = this;
                 // Handle the back button event
                 AlertDialog.Builder builder = new AlertDialog.Builder(context);
                 builder.setMessage("Vuoi uscire dal tuo account?").setCancelable(true);
                 builder.setPositiveButton("SI", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        cb.remove();
                         NavHostFragment.findNavController(Home.this).navigate(R.id.action_Home_Login);
                     }
                 });
@@ -102,7 +111,8 @@ public class Home extends Fragment {
         view.findViewById(R.id.home_pantry).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                NavHostFragment.findNavController(Home.this).navigate(R.id.action_Home_Pantry);
+                callback.remove();
+                NavHostFragment.findNavController(Home.this).navigate(R.id.action_Home_Pantry,b);
             }
         });
         view.findViewById(R.id.home_btn).setOnClickListener(new View.OnClickListener() {
@@ -208,6 +218,7 @@ public class Home extends Fragment {
                                 builder.setPositiveButton("SI", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
+                                        b.putString("accessToken",accessToken);
                                         b.putString("barcode",barcode);
                                         b.putString("token",token);
                                         NavHostFragment.findNavController(Home.this).navigate(R.id.action_Home_Add,b);

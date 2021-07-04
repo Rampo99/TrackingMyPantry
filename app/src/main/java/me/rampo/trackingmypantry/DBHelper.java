@@ -18,6 +18,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String description = "description";
     public static final String barcode = "barcode";
     public static final String quantity = "quantity";
+    public static final String category = "category";
     public DBHelper(@Nullable Context context) {
         super(context, "products.db", null, 1);
     }
@@ -30,7 +31,10 @@ public class DBHelper extends SQLiteOpenHelper {
                 name + " TEXT,"+
                 description + " TEXT,"+
                 barcode + " TEXT," +
-                quantity + " INT)";
+                quantity + " INT," +
+                category + " TEXT)";
+        String createfilters = "CREATE TABLE filters (filter TEXT PRIMARY KEY)";
+        db.execSQL(createfilters);
         db.execSQL(createtable);
     }
 
@@ -58,6 +62,7 @@ public class DBHelper extends SQLiteOpenHelper {
             values.put(description,p.getName());
             values.put(barcode,p.getBarcode());
             values.put(quantity,q);
+            values.put(category,"---");
             db.insert(tablename,null,values);
         }
         c.close();
@@ -73,10 +78,10 @@ public class DBHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         if(c.moveToFirst()){
             int q = c.getInt(4) - 1;
-            query = "UPDATE " + tablename + " SET "+ quantity + " = "+q+" WHERE id = '" + p.getId() + "'";
+            if(q >= 1) query = "UPDATE " + tablename + " SET "+ quantity + " = "+q+" WHERE id = '" + p.getId() + "'";
         }
         db.execSQL(query);
-
+        c.close();
 
 
     }
@@ -88,11 +93,26 @@ public class DBHelper extends SQLiteOpenHelper {
         Cursor c = db.rawQuery(query,null);
         if(c.moveToFirst()){
             do {
-                PantryProduct product = new PantryProduct(c.getString(0),c.getString(1),c.getString(2),c.getString(3),c.getInt(4));
+                PantryProduct product = new PantryProduct(c.getString(0),c.getString(1),c.getString(2),c.getString(3),c.getInt(4),c.getString(5));
                 p.add(product);
             } while (c.moveToNext());
         }
         c.close();
         return p;
+    }
+    public void addFilter(String filter){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String deletequery = "DELETE FROM filters";
+        db.execSQL(deletequery);
+
+        String query = "INSERT INTO filters VALUES('" + filter + "')";
+
+        db.execSQL(query);
+    }
+
+    public void addCategory(String id, String category){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "UPDATE " + tablename + " SET category = '"+category+"' WHERE id = '" + id + "'";
+        db.execSQL(query);
     }
 }

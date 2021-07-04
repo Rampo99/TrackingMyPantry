@@ -15,12 +15,15 @@ import android.widget.ListView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.fragment.NavHostFragment;
+
 import java.util.List;
 
 
 public class Pantry extends Fragment {
     Context context;
     ListView productsview;
+    Bundle b;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
@@ -28,6 +31,7 @@ public class Pantry extends Fragment {
     }
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
+        b = getArguments();
         context = this.getContext();
         DBHelper db = new DBHelper(context);
         productsview = view.findViewById(R.id.pantry_elements);
@@ -41,12 +45,31 @@ public class Pantry extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                builder.setMessage("Vuoi rimuovere questo elemento?").setCancelable(true);
-                builder.setPositiveButton("SI", new DialogInterface.OnClickListener() {
+                builder.setMessage("Scegli azione").setCancelable(true);
+                PantryProduct p = products.get(position);
+                int productquantity = p.getQuantity();
+                builder.setPositiveButton("Aggiungi", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        PantryProduct p = products.get(position);
-                        int productquantity = p.getQuantity();
+
+                        products.get(position).setQuantity(productquantity+1);
+                        db.addProduct(p);
+                        ArrayAdapter<PantryProduct> productArrayAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1,products);
+                        productsview.setAdapter(productArrayAdapter);
+                    }
+                });
+                builder.setNeutralButton("Opzioni", new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        b.putString("productId",p.getId());
+                        NavHostFragment.findNavController(Pantry.this).navigate(R.id.action_Pantry_PantryOptions,b);
+                    }
+                });
+                builder.setNegativeButton("Rimuovi", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
                         if(productquantity == 1){
                             products.remove(p);
                         } else {
@@ -55,12 +78,6 @@ public class Pantry extends Fragment {
                         db.removeProduct(p);
                         ArrayAdapter<PantryProduct> productArrayAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1,products);
                         productsview.setAdapter(productArrayAdapter);
-                    }
-                });
-                builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
                     }
                 });
                 AlertDialog alert = builder.create();
@@ -83,6 +100,18 @@ public class Pantry extends Fragment {
             @Override
             public void afterTextChanged(Editable s) {
 
+            }
+        });
+        view.findViewById(R.id.pantry_filters).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                NavHostFragment.findNavController(Pantry.this).navigate(R.id.action_Pantry_PantryFilters,b);
+            }
+        });
+        view.findViewById(R.id.pantry_home_btn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                NavHostFragment.findNavController(Pantry.this).navigate(R.id.action_Pantry_Home,b);
             }
         });
     }

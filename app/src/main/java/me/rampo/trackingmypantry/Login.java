@@ -1,7 +1,9 @@
 package me.rampo.trackingmypantry;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -10,7 +12,9 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
@@ -56,6 +60,7 @@ public class Login extends Fragment {
                 EditText mail = view.findViewById(R.id.login_mail);
                 EditText psw = view.findViewById(R.id.login_psw);
                 try {
+                    Bundle b = new Bundle();
                     RequestQueue queueLogin = Volley.newRequestQueue(context);
                     JSONObject body = new JSONObject();
                     body.put("email", mail.getText().toString());
@@ -66,10 +71,8 @@ public class Login extends Fragment {
                             new Response.Listener<JSONObject>() {
                                 @Override
                                 public void onResponse(JSONObject response) {
-                                    Bundle b = new Bundle();
                                     try {
                                         String token = response.get("accessToken").toString();
-
                                         b.putString("accessToken",token);
                                     } catch (JSONException e) {
                                         e.printStackTrace();
