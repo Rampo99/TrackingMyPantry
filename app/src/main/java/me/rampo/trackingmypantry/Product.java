@@ -52,4 +52,5 @@ public class Product {
     public void setBarcode(String barcode) {
         this.barcode = barcode;
     }
+
 }

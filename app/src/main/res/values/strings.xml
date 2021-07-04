@@ -22,6 +22,7 @@
     <!-- Home fragment -->
     <string name="barcode">Inserisci barcode</string>
     <string name="home_search">Cerca</string>
+    <string name="pantry">Dispensa</string>
     <!-- Strings used for fragments for navigation -->
     <string name="login_label">Login Fragment</string>
     <string name="register_label">Register Fragment</string>

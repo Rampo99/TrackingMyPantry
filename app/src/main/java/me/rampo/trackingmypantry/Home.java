@@ -50,6 +50,7 @@ public class Home extends Fragment {
     RequestQueue queue;
     Bundle b;
     String token;
+    DBHelper db;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
         // Inflate the layout for this fragment
@@ -62,6 +63,7 @@ public class Home extends Fragment {
         queue = Volley.newRequestQueue(context);
         super.onViewCreated(view, savedInstanceState);
         b = getArguments();
+        db = new DBHelper(context);
         accessToken = b.getString("accessToken");
         insertedproducts = b.getStringArrayList("products");
         productsview = view.findViewById(R.id.home_products);
@@ -97,6 +99,12 @@ public class Home extends Fragment {
         };
         requireActivity().getOnBackPressedDispatcher().addCallback(callback);
 
+        view.findViewById(R.id.home_pantry).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                NavHostFragment.findNavController(Home.this).navigate(R.id.action_Home_Pantry);
+            }
+        });
         view.findViewById(R.id.home_btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -164,11 +172,12 @@ public class Home extends Fragment {
 
                 //add to db here
                 AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                builder.setMessage("Vuoi aggiungere questo prodotto alla tua lista?").setCancelable(true);
+                builder.setMessage("Vuoi aggiungere questo prodotto alla tua dispensa?").setCancelable(true);
                 builder.setPositiveButton("SI", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                        //aggiungi prodotto a lista.
+                        db.addProduct(p);
                     }
                 });
                 builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
