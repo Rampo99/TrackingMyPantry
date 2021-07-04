@@ -83,7 +83,6 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL(query);
         c.close();
 
-
     }
 
     public List<PantryProduct> getProducts(){
@@ -100,16 +99,32 @@ public class DBHelper extends SQLiteOpenHelper {
         c.close();
         return p;
     }
-    public void addFilter(String filter){
+    public void addFilter(List<String> filter){
         SQLiteDatabase db = this.getWritableDatabase();
         String deletequery = "DELETE FROM filters";
         db.execSQL(deletequery);
 
-        String query = "INSERT INTO filters VALUES('" + filter + "')";
+        for(String x : filter){
+            String query = "INSERT INTO filters VALUES('" + x + "')";
 
-        db.execSQL(query);
+            db.execSQL(query);
+        }
+
     }
-
+    public List<String> getFilters(){
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT * FROM filters";
+        Cursor c = db.rawQuery(query,null);
+        List<String> filters = new ArrayList<>();
+        if(c.moveToFirst()){
+            do {
+                String filter = c.getString(0);
+                filters.add(filter);
+            } while (c.moveToNext());
+        }
+        c.close();
+        return filters;
+    }
     public void addCategory(String id, String category){
         SQLiteDatabase db = this.getWritableDatabase();
         String query = "UPDATE " + tablename + " SET category = '"+category+"' WHERE id = '" + id + "'";

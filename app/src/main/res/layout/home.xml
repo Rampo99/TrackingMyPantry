@@ -20,22 +20,21 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/home_search"
-        app:layout_constraintStart_toEndOf="@+id/home_barcode"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/home_barcode" />
 
     <Button
         android:id="@+id/home_pantry"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="@string/pantry"
         app:layout_constraintStart_toEndOf="@+id/home_btn"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="@string/pantry" />
+        app:layout_constraintTop_toBottomOf="@+id/home_barcode" />
 
     <ListView
         android:id="@+id/home_products"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/home_barcode"
+        app:layout_constraintTop_toBottomOf="@+id/home_pantry"
         tools:layout_editor_absoluteX="0dp" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -27,7 +27,7 @@
         android:id="@+id/pantry_filters"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Button"
+        android:text="@string/filters"
         app:layout_constraintStart_toEndOf="@+id/pantry_home_btn"
         app:layout_constraintTop_toTopOf="parent" />
 

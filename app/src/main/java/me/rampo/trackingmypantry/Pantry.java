@@ -17,6 +17,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -36,7 +37,21 @@ public class Pantry extends Fragment {
         DBHelper db = new DBHelper(context);
         productsview = view.findViewById(R.id.pantry_elements);
         EditText text = view.findViewById(R.id.pantry_search);
-        List<PantryProduct> products = db.getProducts();
+        List<PantryProduct> earlyproducts = db.getProducts();
+        List<PantryProduct> products = new ArrayList<>();
+        List<String> filters = db.getFilters();
+        if(filters.size() == 0) products.addAll(earlyproducts);
+        else {
+            for (PantryProduct p : earlyproducts) {
+                for (String filter : filters) {
+                    if (p.getCategoria().equals(filter)) {
+                        products.add(p);
+                        break;
+                    }
+                }
+            }
+        }
+
 
         ArrayAdapter<PantryProduct> productArrayAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1,products);
         productsview.setAdapter(productArrayAdapter);

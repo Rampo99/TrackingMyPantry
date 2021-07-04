@@ -1,8 +1,8 @@
 package me.rampo.trackingmypantry;
 
 public class PantryProduct extends Product{
-    int quantity;
-    String categoria;
+    private int quantity;
+    private String categoria;
 
     @Override
     public String toString() {
