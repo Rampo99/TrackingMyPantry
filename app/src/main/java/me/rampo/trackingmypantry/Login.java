@@ -74,7 +74,6 @@ public class Login extends Fragment {
                                     } catch (JSONException e) {
                                         e.printStackTrace();
                                     }
-                                    Log.d("Success", response.toString());
                                     Toast.makeText(context, "Login avvenuto!",
                                             Toast.LENGTH_LONG).show(); //SOSTITUIRE CON DIALOG
                                     //finish
