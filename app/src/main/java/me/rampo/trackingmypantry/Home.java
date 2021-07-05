@@ -57,6 +57,7 @@ public class Home extends Fragment {
     String token;
     DBHelper db;
     EditText barcode;
+    OnBackPressedCallback callback;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
         // Inflate the layout for this fragment
@@ -91,7 +92,7 @@ public class Home extends Fragment {
             barcode.setText(cameraBarcode);
             getProducts(cameraBarcode);
         }
-        OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
+        callback = new OnBackPressedCallback(true /* enabled by default */) {
             @Override
             public void handleOnBackPressed() {
                 OnBackPressedCallback cb = this;
@@ -128,7 +129,6 @@ public class Home extends Fragment {
             @Override
             public void onClick(View v) {
                 barcode = view.findViewById(R.id.home_barcode);
-
                 getProducts(barcode.getText().toString());
 
 
@@ -137,6 +137,7 @@ public class Home extends Fragment {
         view.findViewById(R.id.home_camera).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                callback.remove();
                 NavHostFragment.findNavController(Home.this).navigate(R.id.action_Home_Qrcode,b);
 
             }
@@ -233,6 +234,7 @@ public class Home extends Fragment {
                                 builder.setPositiveButton("SI", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
+                                        callback.remove();
                                         b.putString("accessToken",accessToken);
                                         b.putString("barcode",barcode);
                                         b.putString("token",token);

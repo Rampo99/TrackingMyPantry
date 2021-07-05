@@ -27,7 +27,10 @@
 
     <action
         android:id="@+id/action_Register_Login"
-        app:destination="@id/LoginFragment" />
+        app:destination="@id/LoginFragment"
+        app:popUpTo="@+id/LoginFragment"
+        app:popUpToInclusive="true"
+        />
     </fragment>
     <fragment
         android:id="@+id/QrcodeFragment"

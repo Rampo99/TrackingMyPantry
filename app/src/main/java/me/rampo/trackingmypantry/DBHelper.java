@@ -20,6 +20,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String quantity = "quantity";
     public static final String category = "category";
     public static final String date = "date";
+    public static final String place = "place";
     public DBHelper(@Nullable Context context) {
         super(context, "products.db", null, 1);
     }
@@ -34,9 +35,12 @@ public class DBHelper extends SQLiteOpenHelper {
                 barcode + " TEXT," +
                 quantity + " INT," +
                 category + " TEXT," +
-                date + " TEXT)";
+                date + " TEXT,"+
+                place + " TEXT)";
         String createfilters = "CREATE TABLE filters (filter TEXT PRIMARY KEY)";
+        String importantcategories = "CREATE TABLE Categories (category TEXT PRIMARY KEY)";
         db.execSQL(createfilters);
+        db.execSQL(importantcategories);
         db.execSQL(createtable);
     }
 
@@ -66,6 +70,7 @@ public class DBHelper extends SQLiteOpenHelper {
             values.put(quantity,q);
             values.put(category,"---");
             values.put(date,"---");
+            values.put(place,"---");
             db.insert(tablename,null,values);
         }
         c.close();
@@ -95,7 +100,7 @@ public class DBHelper extends SQLiteOpenHelper {
         Cursor c = db.rawQuery(query,null);
         if(c.moveToFirst()){
             do {
-                PantryProduct product = new PantryProduct(c.getString(0),c.getString(1),c.getString(2),c.getString(3),c.getInt(4),c.getString(5),c.getString(6));
+                PantryProduct product = new PantryProduct(c.getString(0),c.getString(1),c.getString(2),c.getString(3),c.getInt(4),c.getString(5),c.getString(6),c.getString(7));
                 p.add(product);
             } while (c.moveToNext());
         }
@@ -114,6 +119,7 @@ public class DBHelper extends SQLiteOpenHelper {
         }
 
     }
+
     public List<String> getFilters(){
         SQLiteDatabase db = this.getReadableDatabase();
         String query = "SELECT * FROM filters";
@@ -127,6 +133,49 @@ public class DBHelper extends SQLiteOpenHelper {
         }
         c.close();
         return filters;
+    }
+    public List<String> getCategories(){
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT * FROM Categories";
+        Cursor c = db.rawQuery(query,null);
+        List<String> categories = new ArrayList<>();
+        if(c.moveToFirst()){
+            do {
+                String cat = c.getString(0);
+                categories.add(cat);
+            } while (c.moveToNext());
+        }
+        c.close();
+        return categories;
+    }
+    public void addCategories(List<String> categories){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String deletequery = "DELETE FROM Categories";
+        db.execSQL(deletequery);
+
+        for(String x : categories){
+            String query = "INSERT INTO Categories VALUES('" + x + "')";
+            db.execSQL(query);
+        }
+
+    }
+    public PantryProduct getProduct(String productid){
+        PantryProduct p = null;
+        String query = "SELECT * FROM " + tablename + " WHERE id = '" + productid +"'";
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(query,null);
+        if(c.moveToFirst()){
+            do {
+                p = new PantryProduct(c.getString(0),c.getString(1),c.getString(2),c.getString(3),c.getInt(4),c.getString(5),c.getString(6),c.getString(7));
+            } while (c.moveToNext());
+        }
+        c.close();
+        return p;
+    }
+    public void addPlace(String id, String place){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "UPDATE " + tablename + " SET place = '"+place+"' WHERE id = '" + id + "'";
+        db.execSQL(query);
     }
     public void addCategory(String id, String category){
         SQLiteDatabase db = this.getWritableDatabase();

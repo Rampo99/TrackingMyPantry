@@ -18,7 +18,9 @@ import androidx.core.app.NotificationCompat;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
@@ -26,7 +28,8 @@ import java.util.concurrent.TimeUnit;
 public class MyService extends Service {
     Timer timer;
     TimerTask timerTask;
-    int seconds = 86400;
+    int minute = 1000*60;
+    int day = minute*60*24;
     Context context;
     DBHelper db;
     @Nullable
@@ -46,7 +49,7 @@ public class MyService extends Service {
         timer = new Timer();
 
         initializeTimerTask();
-        timer.schedule(timerTask,seconds,seconds);
+        timer.schedule(timerTask,day,day);
 
     }
 
@@ -59,6 +62,8 @@ public class MyService extends Service {
                 Date today = Calendar.getInstance().getTime();
                 String notificationtext = "";
                 String title = "";
+                HashMap<String,Integer> map = new HashMap<>();
+                List<String> categories = db.getCategories();
                 for(PantryProduct p : products){
                     Date date = p.getDate();
                     if(date != null ) {
@@ -70,11 +75,49 @@ public class MyService extends Service {
                         long diffInMillies = Math.abs(today.getTime() - date.getTime());
                         long diff = TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS);
                         if(diff <= 7) {
+                            title="Attenzione!";
                             notificationtext = "Alcuni tuoi prodotti stanno per scadere!";
                             break;
                         }
                     }
                 }
+                if(categories.size() != 0){
+                    for(PantryProduct p : products){
+                        String cat = p.getCategoria();
+                        if(map.get(cat) == null){
+                            map.put(cat,p.getQuantity());
+                        } else {
+                            int q = map.remove(cat);
+                            map.put(cat,q+p.getQuantity());
+                        }
+                    }
+                    boolean check = false;
+                    boolean check2 = true;
+
+                    for(HashMap.Entry<String,Integer> e : map.entrySet()){
+                        String key = e.getKey();
+                        Integer value = e.getValue();
+                        for(String s : categories) {
+                            if(s.equals(key)) {
+                                check2 = false;
+                                if(value < 10){
+                                    check = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    Intent i = new Intent();
+                    if(check2){
+                        showNotification(context,"Importante!","Alcuni prodotti nelle tue categorie importanti sono finiti!!",i,2);
+                    } else {
+                        if (check) {
+
+                            showNotification(context, "Importante!", "Alcuni prodotti nelle tue categorie importanti stanno finendo!", i, 2);
+                        }
+                    }
+                }
+
                 if(!notificationtext.equals("")) {
                     //send notification
                     Intent i = new Intent();

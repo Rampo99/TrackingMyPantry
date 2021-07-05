@@ -31,6 +31,7 @@
     <string name="add_label">Add fragment</string>
 
     <string name="filters">Filtri</string>
+    <string name="important_filters">Categorie Importanti</string>
     <string name="pesce">Pesce</string>
     <string name="carne">Carne</string>
     <string name="uova">Uova</string>
@@ -39,6 +40,8 @@
     <string name="ortaggi">Ortaggi e frutta</string>
     <string name="grassi">Grassi da condimento</string>
     <string name="date">Inserisci data di scadenza</string>
+    <string name="place">Inserisci luogo</string>
+    <string name="map">Visualizza su mappa!</string>
     <string name="qrcode">QrCode</string>
     <string-array name="options">
         <item>Pesce</item>

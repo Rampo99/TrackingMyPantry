@@ -18,6 +18,7 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -121,6 +122,65 @@ public class Pantry extends Fragment {
             @Override
             public void onClick(View v) {
                 NavHostFragment.findNavController(Pantry.this).navigate(R.id.action_Pantry_PantryFilters,b);
+            }
+        });
+        view.findViewById(R.id.pantry_important).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                List<String> categories = db.getCategories();
+                String[] items = getResources().getStringArray(R.array.options);
+                boolean[] checkedItems = {false, false, false,false, false,false,false};
+                for(String s : categories)
+                switch (s){
+                    case "Uova":
+                        checkedItems[2] = true;
+                        break;
+                    case "Carne":
+                        checkedItems[1] = true;
+                        break;
+                    case "Grassi da condimento":
+                        checkedItems[6] = true;
+                        break;
+                    case "Cereali":
+                        checkedItems[4] = true;
+                        break;
+                    case "Latte e derivati":
+                        checkedItems[3] = true;
+                        break;
+                    case "Ortaggi e frutta":
+                        checkedItems[5] = true;
+                        break;
+                    default:
+                        checkedItems[0] = true;
+                }
+
+                builder.setMultiChoiceItems(items, checkedItems, new DialogInterface.OnMultiChoiceClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+                    }
+                });
+                builder.setPositiveButton("Conferma", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        List<String> finalcategories = new ArrayList<>();
+                        for (int i = 0; i < checkedItems.length; i++) {
+                            if (checkedItems[i]) {
+                                finalcategories.add(items[i]);
+                            }
+                        }
+                        db.addCategories(finalcategories);
+                    }
+                });
+
+                builder.setNegativeButton("Annulla", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+                AlertDialog alert = builder.create();
+                alert.show();
             }
         });
         view.findViewById(R.id.pantry_home_btn).setOnClickListener(new View.OnClickListener() {
