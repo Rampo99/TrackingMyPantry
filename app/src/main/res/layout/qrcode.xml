@@ -6,45 +6,39 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <Spinner
-        android:id="@+id/options_spinner"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+    <SurfaceView
+        android:id="@+id/camera"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <EditText
-        android:id="@+id/options_date"
+    <TextView
+        android:id="@+id/camera_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:ems="10"
-        android:hint="@string/date"
-        android:inputType="date"
+        android:layout_marginTop="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/options_spinner" />
-
+        app:layout_constraintTop_toBottomOf="@+id/camera" />
 
     <Button
-        android:id="@+id/options_confirm"
+        android:id="@+id/camera_back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/back"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/camera_confirm" />
+
+    <Button
+        android:id="@+id/camera_confirm"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/confirm"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.524"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/options_date" />
-
-    <Button
-        android:id="@+id/options_back"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="@string/back"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/options_confirm" />
-
+        app:layout_constraintTop_toBottomOf="@+id/camera_text" />
 </androidx.constraintlayout.widget.ConstraintLayout>

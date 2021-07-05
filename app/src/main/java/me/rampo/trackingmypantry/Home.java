@@ -1,9 +1,11 @@
 package me.rampo.trackingmypantry;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,6 +20,7 @@ import android.widget.Toast;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
@@ -46,12 +49,14 @@ public class Home extends Fragment {
     Context context;
     String accessToken = null;
     ListView productsview;
-    ArrayList<String> insertedproducts;
+    ArrayList<String> insertedproducts = null;
+    String cameraBarcode = null;
     List<Product> productList;
     RequestQueue queue;
     Bundle b;
     String token;
     DBHelper db;
+    EditText barcode;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
         // Inflate the layout for this fragment
@@ -65,11 +70,11 @@ public class Home extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         SharedPreferences preferences = getActivity().getPreferences(Context.MODE_PRIVATE);
         b = getArguments();
-
         db = new DBHelper(context);
         try {
             accessToken = b.getString("accessToken");
             insertedproducts = b.getStringArrayList("products");
+            cameraBarcode = b.getString("qrCode");
         }catch (Exception ignored){}
 
 
@@ -81,7 +86,11 @@ public class Home extends Fragment {
             productsview.setAdapter(productArrayAdapter);
             setlistener();
         }
-
+        if(cameraBarcode != null){
+            barcode = view.findViewById(R.id.home_barcode);
+            barcode.setText(cameraBarcode);
+            getProducts(cameraBarcode);
+        }
         OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
             @Override
             public void handleOnBackPressed() {
@@ -118,14 +127,20 @@ public class Home extends Fragment {
         view.findViewById(R.id.home_btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                EditText barcode = view.findViewById(R.id.home_barcode);
+                barcode = view.findViewById(R.id.home_barcode);
 
                 getProducts(barcode.getText().toString());
 
 
             }
         });
+        view.findViewById(R.id.home_camera).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                NavHostFragment.findNavController(Home.this).navigate(R.id.action_Home_Qrcode,b);
 
+            }
+        });
 
     }
     void setlistener(){

@@ -25,9 +25,19 @@
         android:label="@string/register_label"
         tools:layout="@layout/register">
 
+    <action
+        android:id="@+id/action_Register_Login"
+        app:destination="@id/LoginFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/QrcodeFragment"
+        android:name="me.rampo.trackingmypantry.QRCode"
+        android:label="@string/qrcode"
+        tools:layout="@layout/qrcode">
+
         <action
-            android:id="@+id/action_Register_Login"
-            app:destination="@id/LoginFragment" />
+            android:id="@+id/action_Qrcode_Home"
+            app:destination="@id/HomeFragment" />
     </fragment>
 
     <fragment
@@ -74,6 +84,9 @@
         <action
             android:id="@+id/action_Home_Pantry"
             app:destination="@id/PantryFragment" />
+        <action
+            android:id="@+id/action_Home_Qrcode"
+            app:destination="@id/QrcodeFragment" />
     </fragment>
     <fragment
         android:name="me.rampo.trackingmypantry.PantryProductOptions"

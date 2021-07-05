@@ -19,6 +19,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String barcode = "barcode";
     public static final String quantity = "quantity";
     public static final String category = "category";
+    public static final String date = "date";
     public DBHelper(@Nullable Context context) {
         super(context, "products.db", null, 1);
     }
@@ -32,7 +33,8 @@ public class DBHelper extends SQLiteOpenHelper {
                 description + " TEXT,"+
                 barcode + " TEXT," +
                 quantity + " INT," +
-                category + " TEXT)";
+                category + " TEXT," +
+                date + " TEXT)";
         String createfilters = "CREATE TABLE filters (filter TEXT PRIMARY KEY)";
         db.execSQL(createfilters);
         db.execSQL(createtable);
@@ -63,6 +65,7 @@ public class DBHelper extends SQLiteOpenHelper {
             values.put(barcode,p.getBarcode());
             values.put(quantity,q);
             values.put(category,"---");
+            values.put(date,"---");
             db.insert(tablename,null,values);
         }
         c.close();
@@ -92,7 +95,7 @@ public class DBHelper extends SQLiteOpenHelper {
         Cursor c = db.rawQuery(query,null);
         if(c.moveToFirst()){
             do {
-                PantryProduct product = new PantryProduct(c.getString(0),c.getString(1),c.getString(2),c.getString(3),c.getInt(4),c.getString(5));
+                PantryProduct product = new PantryProduct(c.getString(0),c.getString(1),c.getString(2),c.getString(3),c.getInt(4),c.getString(5),c.getString(6));
                 p.add(product);
             } while (c.moveToNext());
         }
@@ -128,6 +131,11 @@ public class DBHelper extends SQLiteOpenHelper {
     public void addCategory(String id, String category){
         SQLiteDatabase db = this.getWritableDatabase();
         String query = "UPDATE " + tablename + " SET category = '"+category+"' WHERE id = '" + id + "'";
+        db.execSQL(query);
+    }
+    public void addDate(String id, String date){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "UPDATE " + tablename + " SET date = '"+date+"' WHERE id = '" + id + "'";
         db.execSQL(query);
     }
 }
