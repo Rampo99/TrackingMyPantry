@@ -40,7 +40,9 @@
 
         <action
             android:id="@+id/action_Qrcode_Home"
-            app:destination="@id/HomeFragment" />
+            app:destination="@id/HomeFragment"
+            app:popUpTo="@id/HomeFragment"
+            app:popUpToInclusive="true" />
     </fragment>
 
     <fragment
@@ -51,7 +53,9 @@
 
         <action
             android:id="@+id/action_Pantry_Home"
-            app:destination="@id/HomeFragment" />
+            app:destination="@id/HomeFragment"
+            app:popUpTo="@id/HomeFragment"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_Pantry_PantryOptions"
             app:destination="@id/PantryOptions" />
@@ -111,7 +115,9 @@
 
         <action
             android:id="@+id/action_Add_Home"
-            app:destination="@id/HomeFragment" />
+            app:destination="@id/HomeFragment"
+            app:popUpTo="@id/HomeFragment"
+            app:popUpToInclusive="true" />
     </fragment>
 
 
