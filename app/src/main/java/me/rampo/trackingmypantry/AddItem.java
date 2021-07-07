@@ -51,13 +51,18 @@ public class AddItem extends Fragment {
         context = this.getContext();
         super.onViewCreated(view, savedInstanceState);
         b = getArguments();
-        barcode = b.getString("barcode");
-        token = b.getString("token");
-        accessToken = b.getString("accessToken");
+        EditText add_barcode = view.findViewById(R.id.add_item_barcode);
+        try {
+            barcode = b.getString("barcode");
+            token = b.getString("token");
+            accessToken = b.getString("accessToken");
+            add_barcode.setText(barcode);
+        } catch (Exception ignored){}
+
         ArrayList<String> insertedproducts = new ArrayList<>();
 
-        EditText add_barcode = view.findViewById(R.id.add_item_barcode);
-        add_barcode.setText(barcode);
+
+
 
         view.findViewById(R.id.add_item_btn).setOnClickListener(new View.OnClickListener() {
             @Override

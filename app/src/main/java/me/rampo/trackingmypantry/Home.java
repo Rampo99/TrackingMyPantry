@@ -142,6 +142,14 @@ public class Home extends Fragment {
 
             }
         });
+        view.findViewById(R.id.home_add).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                callback.remove();
+                NavHostFragment.findNavController(Home.this).navigate(R.id.action_Home_Add,b);
+
+            }
+        });
 
     }
     void setlistener(){
