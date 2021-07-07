@@ -69,7 +69,6 @@ public class Home extends Fragment {
         context = this.getContext();
         queue = Volley.newRequestQueue(context);
         super.onViewCreated(view, savedInstanceState);
-        SharedPreferences preferences = getActivity().getPreferences(Context.MODE_PRIVATE);
         b = getArguments();
         db = new DBHelper(context);
         try {
@@ -81,6 +80,7 @@ public class Home extends Fragment {
 
         productsview = view.findViewById(R.id.home_products);
         if(insertedproducts != null){
+            b.remove("products");
             //print my products
             productList = new Gson().fromJson(insertedproducts.toString(),new TypeToken<List<Product>>(){}.getType());
             ArrayAdapter<Product> productArrayAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1,productList);
