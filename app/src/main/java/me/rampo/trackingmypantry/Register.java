@@ -53,7 +53,6 @@ public class Register extends Fragment {
             @Override
             public void onClick(View v) {
                 try{
-
                     EditText mail = view.findViewById(R.id.register_mail);
                     EditText name = view.findViewById(R.id.register_name);
                     EditText psw = view.findViewById(R.id.register_psw);
@@ -70,7 +69,7 @@ public class Register extends Fragment {
                                 public void onResponse(JSONObject response) {
                                     Log.d("Success", response.toString());
                                     Toast.makeText(context, "Registrazione avvenuta!",
-                                            Toast.LENGTH_LONG).show(); //SOSTITUIRE CON DIALOG
+                                            Toast.LENGTH_LONG).show();
                                     //finish
                                     NavHostFragment.findNavController(Register.this).navigate(R.id.action_Register_Login);
                                 }

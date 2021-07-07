@@ -78,7 +78,7 @@ public class Login extends Fragment {
                                         e.printStackTrace();
                                     }
                                     Toast.makeText(context, "Login avvenuto!",
-                                            Toast.LENGTH_LONG).show(); //SOSTITUIRE CON DIALOG
+                                            Toast.LENGTH_LONG).show();
                                     //finish
                                     NavHostFragment.findNavController(Login.this).navigate(R.id.action_Login_Home,b);
                                 }
