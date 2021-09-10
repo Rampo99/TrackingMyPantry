@@ -3,7 +3,6 @@ package me.rampo.trackingmypantry;
 import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -11,18 +10,26 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.navigation.fragment.NavHostFragment;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.room.Room;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -32,10 +39,8 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
 import com.google.gson.reflect.TypeToken;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -44,33 +49,59 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 public class Home extends Fragment {
     Context context;
     String accessToken = null;
-    ListView productsview;
+    RecyclerView productsview;
     ArrayList<String> insertedproducts = null;
     String cameraBarcode = null;
-    List<Product> productList;
+    List<WebProduct> productList;
     RequestQueue queue;
     Bundle b;
     String token;
-    DBHelper db;
+    AppDatabase db;
+    ProductDao products;
     EditText barcode;
     OnBackPressedCallback callback;
+    HomeAdapter adapter;
+    LifecycleOwner lifecycleOwner;
+    SharedPreferences preferences;
+
+    ActivityResultLauncher<String[]> activityResultLauncher;
+    public Home(){
+        activityResultLauncher = registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(), result -> {
+            Log.e("activityResultLauncher", ""+result.toString());
+            boolean areAllGranted = true;
+            for(boolean b : result.values()) {
+                areAllGranted = areAllGranted && b;
+            }
+
+            if(areAllGranted) {
+                callback.remove();
+                NavHostFragment.findNavController(Home.this).navigate(R.id.action_Home_Qrcode,b);
+            }
+        });
+    }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-
+        lifecycleOwner = getViewLifecycleOwner();
         return inflater.inflate(R.layout.home, container, false);
+
     }
 
+    @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         context = this.getContext();
         queue = Volley.newRequestQueue(context);
-        super.onViewCreated(view, savedInstanceState);
+        preferences = this.getActivity().getSharedPreferences("MyPref", Context.MODE_PRIVATE);
         b = getArguments();
-        db = new DBHelper(context);
+        db = Room.databaseBuilder(this.getActivity().getApplicationContext(), AppDatabase.class, "pantry-db").build();
+        products = db.productDao();
         try {
             accessToken = b.getString("accessToken");
             insertedproducts = b.getStringArrayList("products");
@@ -82,16 +113,16 @@ public class Home extends Fragment {
         if(insertedproducts != null){
             b.remove("products");
             //print my products
-            productList = new Gson().fromJson(insertedproducts.toString(),new TypeToken<List<Product>>(){}.getType());
-            ArrayAdapter<Product> productArrayAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1,productList);
-            productsview.setAdapter(productArrayAdapter);
-            setlistener();
+            productList = new Gson().fromJson(insertedproducts.toString(),new TypeToken<List<WebProduct>>(){}.getType());
+            setAdapter();
         }
         if(cameraBarcode != null){
+            b.remove("qrCode");
             barcode = view.findViewById(R.id.home_barcode);
             barcode.setText(cameraBarcode);
             getProducts(cameraBarcode);
         }
+
         callback = new OnBackPressedCallback(true /* enabled by default */) {
             @Override
             public void handleOnBackPressed() {
@@ -102,6 +133,10 @@ public class Home extends Fragment {
                 builder.setPositiveButton("SI", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        SharedPreferences.Editor editor = preferences.edit();
+                        editor.remove("loginToken");
+                        editor.remove("loginDate");
+                        editor.apply();
                         cb.remove();
                         NavHostFragment.findNavController(Home.this).navigate(R.id.action_Home_Login);
                     }
@@ -134,11 +169,16 @@ public class Home extends Fragment {
 
             }
         });
-        view.findViewById(R.id.home_camera).setOnClickListener(new View.OnClickListener() {
+        view.findViewById(R.id.home_camera_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                callback.remove();
-                NavHostFragment.findNavController(Home.this).navigate(R.id.action_Home_Qrcode,b);
+                if (ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == 0) {
+                    callback.remove();
+                    NavHostFragment.findNavController(Home.this).navigate(R.id.action_Home_Qrcode,b);
+                } else {
+                    activityResultLauncher.launch(new String[]{Manifest.permission.CAMERA});
+                }
+
 
             }
         });
@@ -152,81 +192,7 @@ public class Home extends Fragment {
         });
 
     }
-    void setlistener(){
-        productsview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Product p = productList.get(position);
 
-
-                //rating part
-
-                JSONObject body = new JSONObject();
-                try {
-                    body.put("token",token);
-                    body.put("rating",1);
-                    body.put("productId",p.getId());
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                RequestQueue queue = Volley.newRequestQueue(context);
-                JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, "https://lam21.modron.network/votes", null,
-                        new Response.Listener<JSONObject>() {
-                            @Override
-                            public void onResponse(JSONObject response) {
-                                Toast.makeText(context, "Aggiunto rating!",
-                                        Toast.LENGTH_SHORT).show();
-                            }
-                        }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Log.d("ErrorRating", error.toString());
-                        Toast.makeText(context, "Hai giá selezionato questo prodotto!",
-                                Toast.LENGTH_SHORT).show();
-                    }
-                }) {
-                    @Override
-                    public byte[] getBody() {
-                        return body.toString().getBytes(StandardCharsets.UTF_8);
-                    }
-
-                    @Override
-                    public String getBodyContentType() {
-                        return "application/json; charset=utf-8";
-                    }
-
-                    @Override
-                    public Map<String, String> getHeaders() throws AuthFailureError {
-                        Map<String, String> params = new HashMap<>();
-                        params.put("Authorization", "Bearer " + accessToken);
-                        return params;
-                    }
-                };
-                queue.add(request);
-
-                //add to db here
-                AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                builder.setMessage("Vuoi aggiungere questo prodotto alla tua dispensa?").setCancelable(true);
-                builder.setPositiveButton("SI", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                       //aggiungi prodotto a lista.
-                        db.addProduct(p);
-                    }
-                });
-                builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-                AlertDialog alert = builder.create();
-                alert.show();
-
-
-            }
-        });
-    }
     void getProducts(String barcode){
         JsonObjectRequest request = new JsonObjectRequest(com.android.volley.Request.Method.GET, "https://lam21.modron.network/products?barcode="+barcode, null,
                 new Response.Listener<JSONObject>() {
@@ -235,7 +201,8 @@ public class Home extends Fragment {
                         try {
                             String products = response.getString("products");
                             token = response.getString("token");
-                            productList = new Gson().fromJson(products,new TypeToken<List<Product>>(){}.getType());
+                            boolean check = productList == null;
+                            productList = new Gson().fromJson(products,new TypeToken<List<WebProduct>>(){}.getType());
                             if(productList.size() == 0) {
                                 AlertDialog.Builder builder = new AlertDialog.Builder(context);
                                 builder.setMessage("Non é stato trovato nessun elemento con questo barcode, vuoi aggiungerlo?").setCancelable(true);
@@ -259,9 +226,11 @@ public class Home extends Fragment {
                                 alert.show();
                             } else {
                                 //print products here
-                                ArrayAdapter<Product> productArrayAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1,productList);
-                                productsview.setAdapter(productArrayAdapter);
-                                setlistener();
+                                if(check) setAdapter();
+                                else {
+                                    adapter.refreshList(productList);
+                                    adapter.notifyDataSetChanged();
+                                }
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -287,6 +256,19 @@ public class Home extends Fragment {
             }
         };
         queue.add(request);
+    }
+    private void setAdapter(){
+
+        adapter = new HomeAdapter(productList,token,accessToken,products,context);
+        GridLayoutManager layoutManager = new GridLayoutManager(context,1);
+        productsview.setHasFixedSize(true);
+        productsview.setLayoutManager(layoutManager);
+        productsview.setItemAnimator(new DefaultItemAnimator());
+        productsview.addItemDecoration(new DividerItemDecoration(context,
+                DividerItemDecoration.VERTICAL));
+        productsview.setAdapter(adapter);
+
+
     }
 
 }

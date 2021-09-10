@@ -33,10 +33,10 @@
         />
     </fragment>
     <fragment
-        android:id="@+id/QrcodeFragment"
-        android:name="me.rampo.trackingmypantry.QRCode"
-        android:label="@string/qrcode"
-        tools:layout="@layout/qrcode">
+        android:id="@+id/BarcodeFragment"
+        android:name="me.rampo.trackingmypantry.BarcodeScanner"
+        android:label="@string/barcode"
+        tools:layout="@layout/barcode">
 
         <action
             android:id="@+id/action_Qrcode_Home"
@@ -58,21 +58,8 @@
             app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_Pantry_PantryOptions"
-            app:destination="@id/PantryOptions" />
-        <action
-            android:id="@+id/action_Pantry_PantryFilters"
-            app:destination="@id/PantryFilters" />
-    </fragment>
-    <fragment
-        android:id="@+id/PantryFilters"
-        android:name="me.rampo.trackingmypantry.PantryFilters"
-        android:label="@string/filters"
-        tools:layout="@layout/pantryfilters">
-        <action
-            android:id="@+id/action_PantryFilters_Pantry"
-            app:destination="@id/PantryFragment"
-            app:popUpTo="@+id/PantryFragment"
-            app:popUpToInclusive="true"/>
+            app:destination="@id/PantryOptions"
+            app:popUpToInclusive="false" />
     </fragment>
     <fragment
         android:id="@+id/HomeFragment"
@@ -93,7 +80,7 @@
             app:destination="@id/PantryFragment" />
         <action
             android:id="@+id/action_Home_Qrcode"
-            app:destination="@id/QrcodeFragment" />
+            app:destination="@id/BarcodeFragment" />
     </fragment>
     <fragment
         android:name="me.rampo.trackingmypantry.PantryProductOptions"

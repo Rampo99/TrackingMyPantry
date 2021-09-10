@@ -7,6 +7,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
@@ -15,12 +16,22 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.LifecycleService;
+import androidx.room.Room;
 
+import org.jetbrains.annotations.NotNull;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
@@ -31,17 +42,22 @@ public class MyService extends Service {
     int minute = 1000*60;
     int day = minute*60*24;
     Context context;
-    DBHelper db;
+    SharedPreferences pref;
+    AppDatabase db;
+    ProductDao products;
     @Nullable
     @Override
-    public IBinder onBind(Intent intent) {
+    public IBinder onBind(@NotNull Intent intent) {
         return null;
     }
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        super.onStartCommand(intent, flags, startId);
         context = this;
-        db = new DBHelper(this);
+        pref = getSharedPreferences("MyPref", Context.MODE_PRIVATE);
+        db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "pantry-db").allowMainThreadQueries().build();
+        products = db.productDao();
         createtimer();
         return START_STICKY;
     }
@@ -57,72 +73,34 @@ public class MyService extends Service {
 
         timerTask = new TimerTask() {
             public void run() {
-                //use a handler to run a toast that shows the current timestamp
-                List<PantryProduct> products = db.getProducts();
+
+                Set<String> categories = pref.getStringSet("categories",null);
+                int categorycount = 0;
+
+                if(categories != null){
+                    for(String s: categories){
+                        categorycount = products.getByCategory(s);
+                    }
+                    if(categorycount > 0){
+                        Intent i = new Intent();
+                        showNotification(context,"Importante!","Alcuni prodotti nelle tue categorie importanti sono finiti o stanno per finire!!",i,2);
+                    }
+                }
+
                 Date today = Calendar.getInstance().getTime();
-                String notificationtext = "";
-                String title = "";
-                HashMap<String,Integer> map = new HashMap<>();
-                List<String> categories = db.getCategories();
-                for(PantryProduct p : products){
-                    Date date = p.getDate();
-                    if(date != null ) {
-                        if (today.after(date)) {
-                            title = "Scaduti!!";
-                            notificationtext = "Alcuni tuoi prodotti sono scaduti!";
-                            break;
-                        }
-                        long diffInMillies = Math.abs(today.getTime() - date.getTime());
-                        long diff = TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS);
-                        if(diff <= 7) {
-                            title="Attenzione!";
-                            notificationtext = "Alcuni tuoi prodotti stanno per scadere!";
-                            break;
-                        }
-                    }
-                }
-                if(categories.size() != 0){
-                    for(PantryProduct p : products){
-                        String cat = p.getCategoria();
-                        if(map.get(cat) == null){
-                            map.put(cat,p.getQuantity());
-                        } else {
-                            int q = map.remove(cat);
-                            map.put(cat,q+p.getQuantity());
-                        }
-                    }
-                    boolean check = false;
-                    boolean check2 = true;
+                long DAY_IN_MS = 1000 * 60 * 60 * 24;
+                Date oneweekmore = new Date(today.getTime() + (7 * DAY_IN_MS));
+                DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+                String strDate = dateFormat.format(oneweekmore);
+                int datecount = products.getByDate(strDate);
 
-                    for(HashMap.Entry<String,Integer> e : map.entrySet()){
-                        String key = e.getKey();
-                        Integer value = e.getValue();
-                        for(String s : categories) {
-                            if(s.equals(key)) {
-                                check2 = false;
-                                if(value < 10){
-                                    check = true;
-                                    break;
-                                }
-                            }
-                        }
-                    }
+                if(datecount > 0){
                     Intent i = new Intent();
-                    if(check2){
-                        showNotification(context,"Importante!","Alcuni prodotti nelle tue categorie importanti sono finiti!!",i,2);
-                    } else {
-                        if (check) {
-
-                            showNotification(context, "Importante!", "Alcuni prodotti nelle tue categorie importanti stanno finendo!", i, 2);
-                        }
-                    }
+                    showNotification(context,"Attenzione!","Alcuni tuoi prodotti sono scaduti o stanno per scadere!",i,1);
+                } else {
+                    int i = 0;
                 }
 
-                if(!notificationtext.equals("")) {
-                    //send notification
-                    Intent i = new Intent();
-                    showNotification(context,title,notificationtext,i,1);
-                }
             }
         };
     }

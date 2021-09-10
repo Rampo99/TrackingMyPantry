@@ -2,25 +2,23 @@ package me.rampo.trackingmypantry;
 
 import android.Manifest;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Vibrator;
-import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
-import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
@@ -29,26 +27,31 @@ import com.google.android.gms.vision.Detector;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.IOException;
 
-public class QRCode extends Fragment {
+public class BarcodeScanner extends Fragment {
     Context context;
     Bundle b;
     TextView text;
+
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
 
-        return inflater.inflate(R.layout.qrcode, container, false);
+        return inflater.inflate(R.layout.barcode, container, false);
     }
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         context = this.getContext();
         b = getArguments();
-        SurfaceView surfaceView = view.findViewById(R.id.camera);
-        text = view.findViewById(R.id.camera_text);
-        BarcodeDetector barcodeDetector = new BarcodeDetector.Builder(context).setBarcodeFormats(Barcode.QR_CODE).build();
 
-        CameraSource cameraSource = new CameraSource.Builder(context, barcodeDetector).setRequestedPreviewSize(640, 480).build();
+        text = view.findViewById(R.id.camera_text);
+
+        BarcodeDetector barcodeDetector = new BarcodeDetector.Builder(context).setBarcodeFormats(Barcode.ALL_FORMATS).build();
+        SurfaceView surfaceView = view.findViewById(R.id.camera);
+        CameraSource cameraSource = new CameraSource.Builder(context, barcodeDetector).setRequestedPreviewSize(640, 480).setAutoFocusEnabled(true).build();
         surfaceView.getHolder().addCallback(new SurfaceHolder.Callback() {
             @Override
             public void surfaceCreated(@NonNull SurfaceHolder holder) {
@@ -82,37 +85,38 @@ public class QRCode extends Fragment {
 
             @Override
             public void receiveDetections(@NonNull Detector.Detections<Barcode> detections) {
-                SparseArray<Barcode> qrCodes = detections.getDetectedItems();
+                SparseArray<Barcode> barcode = detections.getDetectedItems();
 
-                if(qrCodes.size() != 0){
-                    String qrcode = qrCodes.valueAt(0).displayValue;
+                if (barcode.size() != 0) {
+                    String brcode = barcode.valueAt(0).displayValue;
                     text.post(new Runnable() {
                         @Override
                         public void run() {
                             Vibrator v = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
                             v.vibrate(1000);
-                            text.setText(qrcode);
+                            text.setText(brcode);
                         }
                     });
                 }
             }
         });
-
         view.findViewById(R.id.camera_confirm).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                b.putString("qrCode",text.getText().toString());
-                NavHostFragment.findNavController(QRCode.this).navigate(R.id.action_Qrcode_Home,b);
+                b.putString("qrCode", text.getText().toString());
+                NavHostFragment.findNavController(BarcodeScanner.this).navigate(R.id.action_Qrcode_Home, b);
 
             }
         });
         view.findViewById(R.id.camera_back).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                NavHostFragment.findNavController(QRCode.this).navigate(R.id.action_Qrcode_Home,b);
+                NavHostFragment.findNavController(BarcodeScanner.this).navigate(R.id.action_Qrcode_Home, b);
 
             }
         });
 
     }
 }
+
+

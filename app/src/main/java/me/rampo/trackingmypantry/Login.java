@@ -27,11 +27,19 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.nio.charset.StandardCharsets;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 
 public class Login extends Fragment {
     Context context;
-
+    SharedPreferences preferences;
 
     @Override
     public View onCreateView(
@@ -43,8 +51,29 @@ public class Login extends Fragment {
     }
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
-        context = this.getContext();
         super.onViewCreated(view, savedInstanceState);
+        preferences = this.getActivity().getSharedPreferences("MyPref", Context.MODE_PRIVATE);
+        String date = preferences.getString("loginDate",null);
+        if(date != null){
+            try {
+
+                Date d = new SimpleDateFormat("dd/MM/yyyy").parse(date);
+
+                Date today = Calendar.getInstance().getTime();
+                long diffInMillies = Math.abs(today.getTime() - d.getTime());
+                long diff = TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS);
+                if(diff <= 7) {
+                    Bundle b = new Bundle();
+                    String token = preferences.getString("loginToken",null);
+                    b.putString("accessToken",token);
+                    NavHostFragment.findNavController(Login.this).navigate(R.id.action_Login_Home,b);
+                }
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+        context = this.getContext();
+
 
         view.findViewById(R.id.login_to_register_btn).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -72,8 +101,13 @@ public class Login extends Fragment {
                                 @Override
                                 public void onResponse(JSONObject response) {
                                     try {
+                                        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
                                         String token = response.get("accessToken").toString();
                                         b.putString("accessToken",token);
+                                        SharedPreferences.Editor editor = preferences.edit();
+                                        editor.putString("loginToken",token);
+                                        editor.putString("loginDate",dateFormat.format(Calendar.getInstance().getTime()));
+                                        editor.apply();
                                     } catch (JSONException e) {
                                         e.printStackTrace();
                                     }

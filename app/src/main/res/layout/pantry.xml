@@ -5,47 +5,248 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/pantry_home_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:contentDescription="@string/back"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:srcCompat="@drawable/back"
+        android:focusable="true" />
+
+    <TextView
+        android:id="@+id/pantry_product_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="DISPENSA"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/pantry_elements"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView3" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="@string/filters"
+        android:textStyle="italic"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/pantry_product_text" />
+
+    <ImageView
+        android:id="@+id/carne"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="20dp"
+        android:background="#FF0000"
+        android:contentDescription="@string/carne"
+        app:layout_constraintStart_toEndOf="@+id/pesce"
+        app:layout_constraintTop_toBottomOf="@+id/pantry_product_text"
+        app:srcCompat="@drawable/carne" />
+
+    <ImageView
+        android:id="@+id/uova"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="20dp"
+        android:background="#FF0000"
+        android:contentDescription="@string/uova"
+        app:layout_constraintStart_toEndOf="@+id/carne"
+        app:layout_constraintTop_toBottomOf="@+id/pantry_product_text"
+        app:srcCompat="@drawable/uova" />
+
+    <ImageView
+        android:id="@+id/pesce"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="20dp"
+        android:background="#FF0000"
+        android:contentDescription="@string/pesce"
+        app:layout_constraintStart_toEndOf="@+id/categories"
+        app:layout_constraintTop_toBottomOf="@+id/pantry_product_text"
+        app:srcCompat="@drawable/pesce" />
+
+    <ImageView
+        android:id="@+id/latte"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="20dp"
+        android:background="#FF0000"
+        android:contentDescription="@string/latte"
+        app:layout_constraintStart_toEndOf="@+id/uova"
+        app:layout_constraintTop_toBottomOf="@+id/pantry_product_text"
+        app:srcCompat="@drawable/latte" />
+
+    <ImageView
+        android:id="@+id/frutta"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="20dp"
+        android:background="#FF0000"
+        android:contentDescription="@string/ortaggi"
+        app:layout_constraintStart_toEndOf="@+id/grassi"
+        app:layout_constraintTop_toBottomOf="@+id/pantry_product_text"
+        app:srcCompat="@drawable/frutta" />
+
+    <ImageView
+        android:id="@+id/cereali"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="20dp"
+        android:background="#FF0000"
+        android:contentDescription="@string/cereali"
+        app:layout_constraintStart_toEndOf="@+id/frutta"
+        app:layout_constraintTop_toBottomOf="@+id/pantry_product_text"
+        app:srcCompat="@drawable/cereali" />
+
+    <ImageView
+        android:id="@+id/grassi"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="20dp"
+        android:background="#FF0000"
+        android:contentDescription="@string/grassi"
+        app:layout_constraintStart_toEndOf="@+id/latte"
+        app:layout_constraintTop_toBottomOf="@+id/pantry_product_text"
+        app:srcCompat="@drawable/grassi" />
+
+    <TextView
+        android:id="@+id/categories"
+        android:layout_width="65dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/important_filters"
+        android:textIsSelectable="false"
+        android:textStyle="italic"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView" />
+
+    <ImageView
+        android:id="@+id/carne2"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="64dp"
+        android:background="#FF0000"
+        android:contentDescription="@string/carne"
+        app:layout_constraintStart_toEndOf="@+id/pesce2"
+        app:layout_constraintTop_toBottomOf="@+id/pantry_product_text"
+        app:srcCompat="@drawable/carne" />
+
+    <ImageView
+        android:id="@+id/uova2"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="64dp"
+        android:background="#FF0000"
+        android:contentDescription="@string/uova"
+        app:layout_constraintStart_toEndOf="@+id/carne2"
+        app:layout_constraintTop_toBottomOf="@+id/pantry_product_text"
+        app:srcCompat="@drawable/uova" />
+
+    <ImageView
+        android:id="@+id/pesce2"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="64dp"
+        android:background="#FF0000"
+        android:contentDescription="@string/pesce"
+        app:layout_constraintStart_toEndOf="@+id/categories"
+        app:layout_constraintTop_toBottomOf="@+id/pantry_product_text"
+        app:srcCompat="@drawable/pesce" />
+
+    <ImageView
+        android:id="@+id/latte2"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="64dp"
+        android:background="#FF0000"
+        android:contentDescription="@string/latte"
+        app:layout_constraintStart_toEndOf="@+id/uova2"
+        app:layout_constraintTop_toBottomOf="@+id/pantry_product_text"
+        app:srcCompat="@drawable/latte" />
+
+    <ImageView
+        android:id="@+id/frutta2"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="64dp"
+        android:background="#FF0000"
+        android:contentDescription="@string/ortaggi"
+        app:layout_constraintStart_toEndOf="@+id/grassi2"
+        app:layout_constraintTop_toBottomOf="@+id/pantry_product_text"
+        app:srcCompat="@drawable/frutta" />
+
+    <ImageView
+        android:id="@+id/cereali2"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="64dp"
+        android:background="#FF0000"
+        android:contentDescription="@string/cereali"
+        app:layout_constraintStart_toEndOf="@+id/frutta2"
+        app:layout_constraintTop_toBottomOf="@+id/pantry_product_text"
+        app:srcCompat="@drawable/cereali" />
+
+    <ImageView
+        android:id="@+id/grassi2"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="64dp"
+        android:background="#FF0000"
+        android:contentDescription="@string/grassi"
+        app:layout_constraintStart_toEndOf="@+id/latte2"
+        app:layout_constraintTop_toBottomOf="@+id/pantry_product_text"
+        app:srcCompat="@drawable/grassi" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="65dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="1dp"
+        android:layout_marginTop="16dp"
+        android:text="Ricerca Testo"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/categories" />
+
     <EditText
         android:id="@+id/pantry_search"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="12dp"
         android:ems="10"
-        android:hint="@string/name"
+        android:gravity="center"
+        android:hint="Inserisci testo"
         android:inputType="textPersonName"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <Button
-        android:id="@+id/pantry_home_btn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/home"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/pantry_search" />
-
-    <Button
-        android:id="@+id/pantry_filters"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/filters"
-        app:layout_constraintStart_toEndOf="@+id/pantry_home_btn"
-        app:layout_constraintTop_toBottomOf="@+id/pantry_search" />
-
-    <Button
-        android:id="@+id/pantry_important"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/important_filters"
-        app:layout_constraintStart_toEndOf="@+id/pantry_filters"
-        app:layout_constraintTop_toBottomOf="@+id/pantry_search" />
-
-    <ListView
-        android:id="@+id/pantry_elements"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/pantry_home_btn"
-        app:layout_constraintVertical_bias="1.0"
-        tools:layout_editor_absoluteX="0dp" />
-
+        app:layout_constraintStart_toEndOf="@+id/textView3"
+        app:layout_constraintTop_toBottomOf="@+id/categories" />
 </androidx.constraintlayout.widget.ConstraintLayout>

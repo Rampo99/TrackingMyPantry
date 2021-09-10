@@ -15,6 +15,7 @@
 
     <!-- Pantry fragment -->
     <string name="home">Home</string>
+    <string name="quantity">Quantitá</string>
     <!-- Top  -->
     <string name="app_name">TrackingMyPantry</string>
     <!-- Add item -->
@@ -23,7 +24,7 @@
     <!-- Home fragment -->
     <string name="barcode">Inserisci barcode</string>
     <string name="home_search">Cerca</string>
-    <string name="pantry">Pantry</string>
+    <string name="pantry">Dispensa</string>
     <!-- Strings used for fragments for navigation -->
     <string name="login_label">Login Fragment</string>
     <string name="register_label">Register Fragment</string>
@@ -39,10 +40,8 @@
     <string name="cereali">Cereali</string>
     <string name="ortaggi">Ortaggi e frutta</string>
     <string name="grassi">Grassi da condimento</string>
-    <string name="date">Inserisci data di scadenza</string>
-    <string name="place">Inserisci luogo</string>
-    <string name="map">Visualizza su mappa!</string>
-    <string name="qrcode">QrCode</string>
+    <string name="date">Data in formato gg/mm/aa</string>
+    <string name="place">Luogo di acquisto</string>
     <string-array name="options">
         <item>Pesce</item>
         <item>Carne</item>
