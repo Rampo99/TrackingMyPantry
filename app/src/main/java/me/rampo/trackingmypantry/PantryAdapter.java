@@ -1,5 +1,6 @@
 package me.rampo.trackingmypantry;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
@@ -11,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
@@ -34,14 +36,15 @@ public class PantryAdapter extends RecyclerView.Adapter<PantryAdapter.PantryHold
     private Fragment fragment;
     private Bundle b;
     private Executor mExecutor = Executors.newSingleThreadExecutor();
-    private Date today = Calendar.getInstance().getTime();
+    private Context context;
     private OnBackPressedCallback callback;
-    public PantryAdapter(List<Product> productList, ProductDao productDao, Fragment fragment, Bundle b, OnBackPressedCallback callback){
+    public PantryAdapter(List<Product> productList, ProductDao productDao, Fragment fragment, Bundle b, OnBackPressedCallback callback, Context context){
         this.productList = productList;
         this.productDao = productDao;
         this.fragment = fragment;
         this.b = b;
         this.callback = callback;
+        this.context = context;
     }
     public class PantryHolder extends RecyclerView.ViewHolder{
         private TextView productname;
@@ -90,22 +93,8 @@ public class PantryAdapter extends RecyclerView.Adapter<PantryAdapter.PantryHold
         holder.productquantity.setText(String.valueOf(p.getQuantity()));
         holder.productplace.setText(p.getPlace());
         holder.productdate.setText(p.getDateoutput());
-        if(p.getDateoutput() != null){
-            Date d = null;
-            try {
-                d = new SimpleDateFormat("dd/MM/yyyy").parse(p.getDateoutput());
-                long diffInMillies = Math.abs(today.getTime() - d.getTime());
-                long diff = TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS);
-                if(diff <= 7) {
-                    holder.productdate.setTextColor(Color.RED);
-                }
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
 
 
-
-        }
         holder.plusButton.setOnClickListener(v -> {
             int q = p.getQuantity()+1;
             p.setQuantity(q);
@@ -139,19 +128,22 @@ public class PantryAdapter extends RecyclerView.Adapter<PantryAdapter.PantryHold
                 NavHostFragment.findNavController(fragment).navigate(R.id.action_Pantry_PantryOptions,b);
             }
         });
-        if(p.getPlace() != null){
-            holder.mapButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
+
+        holder.mapButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(p.getPlace() == null){
+                    Toast.makeText(context, "Devi prima inserire il luogo!",
+                            Toast.LENGTH_SHORT).show();
+                } else {
                     Uri gmmIntentUri = Uri.parse("geo:0,0?q=" + p.getPlace());
                     Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
                     mapIntent.setPackage("com.google.android.apps.maps");
                     fragment.startActivity(mapIntent);
                 }
-            });
-        } else {
-            holder.mapButton.setBackgroundColor(Color.RED);
-        }
+
+            }
+        });
 
 
     }

@@ -68,6 +68,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.HomeHolder> {
             addButton = view.findViewById(R.id.addButton);
             likeButton = view.findViewById(R.id.likeButton);
         }
+
     }
     @NonNull
     @Override
@@ -84,12 +85,12 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.HomeHolder> {
         holder.webProductbarcode.setText(p.getBarcode());
         holder.webProductdesc.setText(p.getDescription());
         holder.webProductid.setText(p.getId());
-
         holder.addButton.setOnClickListener(v -> {
             //aggiungi prodotto a lista.
-            Toast.makeText(context, "Prodotto aggiunto alla tua dispensa!",Toast.LENGTH_SHORT).show();
+            String text = p.getName() != null ? p.getName() : "";
+            Toast.makeText(context, "Prodotto " + text + " aggiunto alla tua dispensa!",Toast.LENGTH_SHORT).show();
             mExecutor.execute(() -> {
-                Product temp = products.getById(p.id);
+                Product temp = products.getById(p.getId());
                 if (temp == null) {
                     products.insert(p.toProduct());
                 } else {
@@ -97,10 +98,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.HomeHolder> {
                 }
             });
         });
-
-        holder.likeButton.setOnClickListener(v -> {
-            v.setClickable(false);
-            holder.likeButton.setColorFilter(Color.GRAY);
+        holder.likeButton.setOnClickListener(v->{
             JSONObject body = new JSONObject();
             try {
                 body.put("token", token);
@@ -109,19 +107,21 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.HomeHolder> {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+            String text = p.getName() != null ? p.getName() : "";
             RequestQueue queue = Volley.newRequestQueue(context);
             JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, "https://lam21.modron.network/votes", null,
                     new Response.Listener<JSONObject>() {
                         @Override
                         public void onResponse(JSONObject response) {
-                            Toast.makeText(context, "Aggiunto rating!",
+
+                            Toast.makeText(context, "Aggiunto rating al prodotto " + text +"!",
                                     Toast.LENGTH_SHORT).show();
                         }
                     }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
                     Log.d("ErrorRating", error.toString());
-                    Toast.makeText(context, "Hai giá aggiunto il rating a questo prodotto!",
+                    Toast.makeText(context, "Hai giá aggiunto il rating al prodotto " + text + "!",
                             Toast.LENGTH_SHORT).show();
                 }
             }) {
@@ -143,9 +143,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.HomeHolder> {
                 }
             };
             queue.add(request);
-
         });
-
     }
 
     @Override

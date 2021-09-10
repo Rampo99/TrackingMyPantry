@@ -201,7 +201,7 @@ public class Home extends Fragment {
                         try {
                             String products = response.getString("products");
                             token = response.getString("token");
-                            boolean check = productList == null;
+                            boolean check = productList == null || (productList.size() == 0);
                             productList = new Gson().fromJson(products,new TypeToken<List<WebProduct>>(){}.getType());
                             if(productList.size() == 0) {
                                 AlertDialog.Builder builder = new AlertDialog.Builder(context);

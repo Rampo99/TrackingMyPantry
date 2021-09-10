@@ -2,6 +2,7 @@ package me.rampo.trackingmypantry;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -10,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
@@ -63,7 +65,16 @@ public class AddItem extends Fragment {
 
 
 
-
+        OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
+            @Override
+            public void handleOnBackPressed() {
+                // Handle the back button event
+                if(insertedproducts.size() > 0) b.putStringArrayList("products",insertedproducts);
+                this.remove();
+                NavHostFragment.findNavController(AddItem.this).navigate(R.id.action_Add_Home,b);
+            }
+        };
+        requireActivity().getOnBackPressedDispatcher().addCallback(callback);
         view.findViewById(R.id.add_item_btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -115,6 +126,7 @@ public class AddItem extends Fragment {
                                     public void onClick(DialogInterface dialog, int which) {
                                         b.putStringArrayList("products",insertedproducts);
                                         dialog.dismiss();
+                                        callback.remove();
                                         NavHostFragment.findNavController(AddItem.this).navigate(R.id.action_Add_Home,b);
                                     }
                                 });

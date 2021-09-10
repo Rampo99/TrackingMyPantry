@@ -245,7 +245,7 @@ public class Pantry extends Fragment {
         });
     }
     private void setAdapter(){
-        adapter = new PantryAdapter(products,productDao,Pantry.this,b,callback);
+        adapter = new PantryAdapter(products,productDao,Pantry.this,b,callback,context);
         GridLayoutManager layoutManager = new GridLayoutManager(context,1);
         productsview.setLayoutManager(layoutManager);
         productsview.setItemAnimator(new DefaultItemAnimator());
